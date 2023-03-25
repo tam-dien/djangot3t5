@@ -38,3 +38,34 @@ def link1(request):
 
 def link2(request):
     return HttpResponse("<a href='/link1'>Sang link 1</a>")
+
+L_sanpham = [
+    {
+        "id":1,
+        "name":"Bánh bò",
+        "price":"10000",
+    },
+    {
+        "id":2,
+        "name":"Bún chả",
+        "price":"35000",
+    },
+    {
+        "id":3,
+        "name":"Bánh mì chảo",
+        "price":"40000",
+    },
+]
+
+def sanpham(request,id):
+    chuoi = ""
+    for i in L_sanpham:
+        if i["id"] == id:
+            chuoi = f'''
+                ID : {id}<br>
+                Name: {i["name"]}<br>
+                Price: {i["price"]}
+            '''
+    if chuoi == "":
+        chuoi = "San pham khong ton tai"
+    return HttpResponse(chuoi)
