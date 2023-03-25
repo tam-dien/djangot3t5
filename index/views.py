@@ -42,23 +42,40 @@ def link2(request):
 l_sanpham = [
     {
         "id": 1,
-        "name": "Bánh bò",
-        "price": "10000"
+        "name": "Bánh",
+        "product": [
+            {
+                "id": 1,
+                "name": "Bánh bò",
+                "price": "10000"
+            },
+            {
+                "id": 2,
+                "name": "Bánh bọt lọc",
+                "price": "20000"
+            },
+            {
+                "id": 3,
+                "name": "Bánh flan",
+                "price": "14000"
+            },
+        ]
     },
     {
         "id": 2,
-        "name": "Coca",
-        "price": "20000"
-    },
-    {
-        "id": 3,
-        "name": "Bánh flan",
-        "price": "14000"
-    },
-    {
-        "id": 4,
-        "name": "Phở bò",
-        "price": "45000"
+        "name": "Bún",
+        "product": [
+            {
+                "id": 3,
+                "name": "Phở bò",
+                "price": "45000"
+            },
+            {
+                "id": 4,
+                "name": "Bún chả",
+                "price": "40000"
+            }
+        ]
     },
 ]
 
@@ -75,4 +92,16 @@ def sanpham(request, id):
                         price=item['price']))
         # elif id != item['id']:
         #     
+    return HttpResponse('Không có sản phẩm')
+
+def danhsachsanpham(request, id):
+    for item in l_sanpham:
+        
+        if id == item['id']:
+            text = ''
+            for i in item['product']:
+                text += f'''
+                {i["id"]} {i["name"]} {i["price"]}<br>
+                '''
+            return HttpResponse(text)  
     return HttpResponse('Không có sản phẩm')
