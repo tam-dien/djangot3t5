@@ -42,27 +42,56 @@ def link2(request):
 L_sanpham = [
     {
         "id":1,
-        "name":"Bánh bò",
-        "price":"10000",
+        "name":"Bánh",
+        "product":[
+            {
+                "id":1,
+                "name":"Bánh bò",
+                "price":"10000",
+            },
+            {
+                "id":2,
+                "name":"Bánh bột lọc",
+                "price":"10000",
+            },
+        ]
     },
     {
-        "id":2,
-        "name":"Bún chả",
-        "price":"35000",
-    },
-    {
-        "id":3,
-        "name":"Bánh mì chảo",
-        "price":"40000",
+        "id":1,
+        "name":"Bún",
+        "product":[
+            {
+                "id":3,
+                "name":"Bún chả",
+                "price":"35000",
+            },
+            {
+                "id":4,
+                "name":"Bún riêu",
+                "price":"40000",
+            },
+        ]
     },
 ]
 
 def sanpham(request,id):
     for i in L_sanpham:
-        if i["id"] == id:
-            return HttpResponse(f'''
+        for j in i["product"]:
+            if id == j["id"]:
+                return HttpResponse(f'''
                 ID : {id}<br>
-                Name: {i["name"]}<br>
-                Price: {i["price"]}
+                Name: {j["name"]}<br>
+                Price: {j["price"]}
             ''')
     return HttpResponse("San pham khong ton tai")
+
+def danhsachsanpham(request, id):
+    for i in L_sanpham:
+        if id == i["id"]:
+            chuoi = ""
+            for item in i["product"]:
+                chuoi += f'''
+                {item["id"]} {item["name"]} {item["price"]}<br>
+                '''
+            return HttpResponse(chuoi)
+    return HttpResponse("Khong co id group")
