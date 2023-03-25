@@ -73,5 +73,6 @@ def sanpham(request, id):
             '''.format(a=item['id'],
                         b=item['name'],
                         price=item['price']))
-        else:
-            return HttpResponse('Không có sản phẩm')
+        # elif id != item['id']:
+        #     
+    return HttpResponse('Không có sản phẩm')
