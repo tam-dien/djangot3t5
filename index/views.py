@@ -57,12 +57,55 @@ L_sanpham = [
 ]
 def sanpham(request,id):
     chuoi=""
-
-    for i in range(len(L_sanpham)):
-        if id == L_sanpham[i]["id"]:
-          chuoi = " thong tin" + str(L_sanpham[i]["id"])+str(L_sanpham[i]["name"]) + str(L_sanpham[i]["price"])
+    for i in L_sanpham:
+        if id == i["id"]:
+          chuoi = " thong tin" + str(i["id"])+str(i["name"]) + str(i["price"])
           return HttpResponse("San pham co:"+ chuoi)
 
     return HttpResponse("hihi")
+L_sanpham2= [
+    {
+        "id":1,
+        "name":"Bánh",
+        "product":[
+            {
+                "id":1,
+                "name":"Bánh bò",
+                "price":"10000",
+            },
+            {
+                "id":2,
+                "name":"Bánh bột lọc",
+                "price":"10000",
+            },
+        ]
+    },
+    {
+        "id":2,
+        "name":"Bún",
+        "product":[
+            {
+                "id":3,
+                "name":"Bún chả",
+                "price":"35000",
+            },
+            {
+                "id":4,
+                "name":"Bún riêu",
+                "price":"40000",
+            },
+        ]
+    },
+]
+
+def danhsachsanpham(request,id):
+    chuoi2=""
+    for item in L_sanpham2:
+        if id == item["id"]:
+            for product in item["product"]:
+                    chuoi2 = " thong tin" + str(product["id"])+str(product["name"]) + str(product["price"])
+                    return HttpResponse("San pham co:"+ chuoi2)
+
+    return HttpResponse("San pham co:"+ chuoi2)
 
     
