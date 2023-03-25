@@ -58,18 +58,6 @@ L_sanpham = [
 ]
 
 def sanpham(request,id):
-    # chuoi = ""
-    # for i in L_sanpham:
-    #     if i["id"] == id:
-    #         chuoi = f'''
-    #             ID : {id}<br>
-    #             Name: {i["name"]}<br>
-    #             Price: {i["price"]}
-    #         '''
-    # if chuoi == "":
-    #     chuoi = "San pham khong ton tai"
-    # return HttpResponse(chuoi)
-
     for i in L_sanpham:
         if i["id"] == id:
             return HttpResponse(f'''
