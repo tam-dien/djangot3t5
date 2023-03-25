@@ -57,7 +57,12 @@ L_sanpham = [
 ]
 def sanpham(request,id):
     chuoi=""
-    for i in range(len(L_sanpham)):
-          chuoi += " thong tin" + str(L_sanpham[i]["id"])+str(L_sanpham[i]["name"]) + str(L_sanpham[i]["price"])
 
-    return HttpResponse("San pham co:"+ chuoi)
+    for i in range(len(L_sanpham)):
+        if id == L_sanpham[i]["id"]:
+          chuoi = " thong tin" + str(L_sanpham[i]["id"])+str(L_sanpham[i]["name"]) + str(L_sanpham[i]["price"])
+          return HttpResponse("San pham co:"+ chuoi)
+
+    return HttpResponse("hihi")
+
+    
