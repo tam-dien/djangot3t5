@@ -38,3 +38,32 @@ def link1(request):
 
 def link2(request):
     return HttpResponse("<a href='/link1'>Sang link 1</a>")
+
+L_sanpham = [
+    {
+        "id":1,
+        "name":"Bánh bò",
+        "price":"10000",
+    },
+    {
+        "id":2,
+        "name":"Bún chả",
+        "price":"35000",
+    },
+    {
+        "id":3,
+        "name":"Bánh mì chảo",
+        "price":"40000",
+    },
+]
+
+def sanpham(request,id):
+    ## đưa vào id ~~> 
+    #### hiển thị lên trình duyệt:
+    #### ID: ID sản phẩm
+    #### Tên: Tên sản phẩm
+    #### Giá: Giá sản phẩm
+    ## nếu id không có thị hiển thị Sản phẩm không tồn tại
+    for i in L_sanpham:
+        print(i)
+    return HttpResponse("Sản phẩm có ID: " + str(id))
