@@ -30,11 +30,48 @@ def xulytime(request):
         {b}<br/>
         {result}
     '''.format(a=a.strftime("%d/%m/%Y %H:%M:%S"),
-               b=b.strftime("%d/%m/%Y %H:%M:%S"),
-               result=result))
+                b=b.strftime("%d/%m/%Y %H:%M:%S"),
+                result=result))
 
 def link1(request):
     return HttpResponse("<a href='/link2'>Sang link 2</a>")
 
 def link2(request):
     return HttpResponse("<a href='/link1'>Sang link 1</a>")
+
+l_sanpham = [
+    {
+        "id": 1,
+        "name": "Bánh bò",
+        "price": "10000"
+    },
+    {
+        "id": 2,
+        "name": "Coca",
+        "price": "20000"
+    },
+    {
+        "id": 3,
+        "name": "Bánh flan",
+        "price": "14000"
+    },
+    {
+        "id": 4,
+        "name": "Phở bò",
+        "price": "45000"
+    },
+]
+
+def sanpham(request, id): 
+    
+    for item in l_sanpham:
+        if id == item['id']:
+            return HttpResponse('''
+                ID: {a}<br/>
+                Tên sản phẩm: {b}<br/>
+                Giá sản phẩm: {price}
+            '''.format(a=item['id'],
+                        b=item['name'],
+                        price=item['price']))
+        else:
+            return HttpResponse('Không có sản phẩm')
