@@ -74,12 +74,10 @@ def danhsachsanpham(request,id):
     # id gr
     # trả về sp của gr
 
-    text = "Không có thông tin về danh mục"
-
     for category in L_sanpham2:
         if id == category["id"]:
             lst = []
             for item in category["product"]:
                 lst.append("ID: {a}<br>Tên sản phẩm: {b}<br>Giá: {c}<br>".format(a = item["id"], b = item["name"], c = item["price"]))
-                a = len(lst)
+
     return HttpResponse(lst)
