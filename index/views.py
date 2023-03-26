@@ -57,7 +57,7 @@ L_sanpham = [
         ]
     },
     {
-        "id":1,
+        "id":2,
         "name":"Bún",
         "product":[
             {
@@ -85,6 +85,20 @@ def sanpham(request,id):
             ''')
     return HttpResponse("San pham khong ton tai")
 
+def danhsachsanpham0(request):
+    text = ""
+    for item in L_sanpham:
+        text_product = ""
+        for product in item["product"]:
+            text_product += '''
+            ID: {a}<br>
+            Ten san pham: {b}<br>
+            Gia: {c}<br>'''.format(a = product["id"], b=product["name"], c=product["price"])
+        text += '''ID nhom: {a}<br>
+                Ten nhom: {b}<br>
+                Danh sach san pham: <br>{c}<br><hr>'''.format(a = item["id"], b=item["name"], c=text_product)
+    return HttpResponse(text)
+
 def danhsachsanpham(request, id):
     for i in L_sanpham:
         if id == i["id"]:
@@ -95,3 +109,23 @@ def danhsachsanpham(request, id):
                 '''
             return HttpResponse(chuoi)
     return HttpResponse("Khong co id group")
+
+def sanpham2(request,id_group,id_product):
+    for group in L_sanpham:
+        for product in group['product']:
+            if product['id'] == id_product:
+                if id_group == group['id']:
+                    return HttpResponse(f'''
+                    Group: {group['name']}<br>
+                    Product id: {product['id']}<br>
+                    Product name: {product['name']}<br>
+                    Product price: {product['price']}<br>''')
+                else:
+                    return HttpResponse(f'''
+                    Sản phẩm {product['name']} 
+                    thuộc group {group['name']} 
+                    có id là {group['id']}''')
+    return HttpResponse("Không có thông tin về sản phẩm")
+
+def handler404(request,exception):
+    return HttpResponse("Ban dang vao 1 duong dan sai")
