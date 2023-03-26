@@ -66,12 +66,12 @@ l_sanpham = [
         "name": "Bún",
         "product": [
             {
-                "id": 3,
+                "id": 4,
                 "name": "Phở bò",
                 "price": "45000"
             },
             {
-                "id": 4,
+                "id": 5,
                 "name": "Bún chả",
                 "price": "40000"
             }
@@ -90,9 +90,23 @@ def sanpham(request, id):
             '''.format(a=item['id'],
                         b=item['name'],
                         price=item['price']))
-        # elif id != item['id']:
-        #     
     return HttpResponse('Không có sản phẩm')
+
+def danhsachsanpham0(request):
+    text = ''
+    for item in l_sanpham:
+        text_product = ""
+        for product in item['product']:
+            text_product += '''<br>
+                ID: {a} <br>
+                Tên sản phẩm: {a} <br>
+                Giá: {c} <br><hr>
+            '''.format(a=product['id'], b=product['name'], c=product['price'])
+        text = '''ID nhóm: {a} <br> 
+                Tên nhóm: {b} <br>
+                Danh sách sản phẩm: {c} <br><hr>
+                '''.format(a=item['id'], b=item['name'], c=text_product)
+    return HttpResponse(text)
 
 def danhsachsanpham(request, id):
     for item in l_sanpham:
@@ -105,3 +119,31 @@ def danhsachsanpham(request, id):
                 '''
             return HttpResponse(text)  
     return HttpResponse('Không có sản phẩm')
+
+def dssanpham(request, id_group, id_product):
+    return HttpResponse('san pham co 2 tham so la {a}, {b}'.format(a=id_group, b=id_product))
+
+def findProduct(request, id_group, id_product):
+    for item in l_sanpham:
+        for product in item['product']:
+            for id in range (1, product['id'] + 1):
+                if id_product == id and id_group == item['id']:
+                    return HttpResponse('''
+                                        Group-Name: {a}<br/>
+                                        ID: {b}<br/>
+                                        Tên sản phẩm: {c}<br/>
+                                        Giá sản phẩm: {price}
+                                    '''.format(a=item['name'],
+                                                b=id,
+                                                c=product['name'],
+                                                price=product['price']))
+                elif id_product == id:
+                    return HttpResponse('''
+                                            Sản phẩm {a} thuộc group {b}
+                                            có ID group là {c}
+                                        '''.format(a=product['name'],
+                                                    b=item['name'],
+                                                    c=item['id']))
+
+    return HttpResponse('Không có sản phẩm này')
+
