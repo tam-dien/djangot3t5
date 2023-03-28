@@ -108,4 +108,21 @@ def danhsachsanpham(request,id):
 
     return HttpResponse("San pham co:"+ chuoi2)
 
+def sanpham2(request, id_group, id_product):
+     
+     for group in L_sanpham2:
+            if id_group ==group["id"]:
+                for product in group["product"]:
+                        if id_product == product["id"]:
+                             return HttpResponse("sanpham có 2 tham số là {a}, {b}".format( a=id_group, b=id_product))
+                        elif id_product != product["id"]: 
+                            for group in L_sanpham2:
+                                 for product in group["product"]:
+                                        if id_product == product["id"]:
+                                            return HttpResponse("sanpham có 2 tham số là {a}, {b}".format( a=group["id"], b=id_product))
+
+    
+     return HttpResponse("no group")
+
+
     
