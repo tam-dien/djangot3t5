@@ -125,3 +125,73 @@ def sanpham2(request,id_group,id_product):
 
 def handler404(request, exception):
     return HttpResponse("Bạn đang vào 1 đường dẫn sai")
+
+from django.views.decorators.csrf import csrf_exempt
+
+count = 0
+
+@csrf_exempt
+def test_request(request):
+    global count
+    print("Đường dẫn:",request.path)
+    print("Dữ liệu GET:",request.GET)
+    if request.method=="GET":
+        # ten = request.GET['ten'] if "ten" in request.GET else ""
+        ten = request.GET.get("ten")
+        return HttpResponse(str(ten) + '''<br>
+            <form>
+                <input name="ten">
+                <input name="tuoi">
+                <button type="submit">Submit</button>
+            </form>
+        ''')
+    elif request.method=="POST":
+        count += 1
+        return HttpResponse("Count đã được tăng")
+
+def search_product(request):
+    text = '''
+        <form>
+            <input name="product" placeholder="Sản phẩm">
+            <button type="submit">Submit</button>
+        </form>
+    '''
+    return HttpResponse(text)
+
+@csrf_exempt
+def login(request):
+    print("Phương thức:",request.method)
+    print("Data GET:",request.GET)
+    print("Data POST:",request.POST)
+    text = ""
+    if request.method == "GET":
+        text = '''
+            <form method="POST">
+                <input name="username" placeholder="Username">
+                <input type="password" name="password" placeholder="Password">
+                <button type="submit">Submit</button>
+            </form>
+        '''
+    elif request.method == "POST":
+        if request.POST.get("username") == "hatrang" and request.POST.get("password") == "123":
+            return HttpResponse("Bạn đã login thành công")
+        text = '''
+            Bạn đã nhập sai username hoặc mật khẩu
+            <form method="POST">
+                <input name="username" placeholder="Username">
+                <input type="password" name="password" placeholder="Password">
+                <button type="submit">Submit</button>
+            </form>
+        '''
+    return HttpResponse(text)
+
+def add_product(request,id_group):
+    ### tạo form để thêm sản phẩm vào group
+    ##### form có 3 input: id, tên sản phẩm và giá
+    ##### form có method POST
+    ####### xử lý form
+    ######### xử lý trong POST 
+    ######### không có trường nào bị rỗng, id và giá phải là dạng số (sử dụng hàm isnumeric)
+    ######### nếu form không đúng định dạng ~~> gen lại form cho người dùng nhập lại
+    ######### nếu form đúng định dạng thì thêm sản phẩm mới và trả về trình duyệt tạo sản phẩm thành công
+    return HttpResponse()
