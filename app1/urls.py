@@ -6,4 +6,5 @@ urlpatterns = [
     path('hi/', views.hi),
     path('sanpham/<int:id>', views.sanpham),
     path('danhsachsanpham/<int:id>', views.danhsachsanpham),
+    path('sanpham2/<int:group>/<int:id>', views.sanpham2),
 ]
