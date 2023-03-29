@@ -247,18 +247,16 @@ def login(request):
 
 @csrf_exempt
 def add_product(request, id_group):
-    ### Tạo form để thêm sản phẩm vào group
-    ### form có 3 input: id, tên sản phẩm và giá
-    ### form có method POST
-    ##### không có trường nào bị rỗng, id và giá là số (sử dụng hàm isnumeric)
-    ##### nếu form ko đúng định dạng --> render lại form 
-    ##### nếu form đúng thì thêm sản phẩm mới và trả về trình duyệt tạo sản phẩm thành công
     text = ""
     if request.method == "GET":
         text = '''
+            <h3>Nhập sản phẩm</h3>
             <form method="POST">
+                <label for="id_product">ID-Product</label><br>
                 <input name="id_product" type="text" required><br>
+                <label for="name_product">Name</label><br>
                 <input name="name_product" type="text" required><br>
+                <label for="price">Price</label><br>
                 <input name="price" type="text" required><br>
                 <button type="submit">Submit</button>
             </form>
@@ -267,10 +265,13 @@ def add_product(request, id_group):
         if request.POST.get('id_product').isnumeric() and request.POST.get('price').isnumeric(): 
             for item in l_sanpham:
                 if id_group == item['id']:
+                    for product in item['product']:
+                        if int(request.POST.get('id_product')) == product['id']:
+                            return HttpResponse('Bị trùng id - Vui lòng nhập lại')
                     item['product'].append({
-                        "id": request.POST.get('id_product'),
+                        "id": int(request.POST.get('id_product')),
                         "name": request.POST.get('name_product'),
-                        "price": request.POST.get('price')
+                        "price": int(request.POST.get('price'))
                     })
                     return HttpResponse("Tạo sản phẩm thành công")
             text = "Group Id bạn nhập không tồn tại"
@@ -278,9 +279,12 @@ def add_product(request, id_group):
             text = '''
             <h3>Id sản phẩm hoặc giá sản phẩm bị nhập sai kiểu. Vui lòng nhập lại</h3>
             <form method="POST">
-                <input name="id_product" type="text" required>
-                <input name="name_product" type="text" required>
-                <input name="price" type="text" required>
+                <label for="id_product">ID-Product</label><br>
+                <input name="id_product" type="text" required><br>
+                <label for="name_product">Name</label><br>
+                <input name="name_product" type="text" required><br>
+                <label for="price">Price</label><br>
+                <input name="price" type="text" required><br>
                 <button type="submit">Submit</button>
             </form>
         '''
