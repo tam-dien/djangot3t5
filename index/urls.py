@@ -11,4 +11,9 @@ urlpatterns = [
     path('danhsachsanpham/<int:id>', views.danhsachsanpham),
     # path('sanpham/<int:id_group>/<int:it_product>', views.dssanpham),
     path('sanpham/<int:id_group>/<int:id_product>', views.findProduct),
+    path('test_request/', views.testRequest),
+    path('http_method/', views.http_method),
+    path('search_product/', views.search_product),
+    path('login/', views.login),
+    path('add_product/<int:id_group>', views.add_product),
 ]

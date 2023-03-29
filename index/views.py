@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 import datetime
 
@@ -147,3 +148,141 @@ def findProduct(request, id_group, id_product):
 
     return HttpResponse('Không có sản phẩm này')
 
+count = 0
+
+def testRequest(request):
+    print(request.method)
+    return HttpResponse('Test request')
+
+@csrf_exempt
+def http_method(request):
+    global count
+    print('Đường dẫn: ', request.path)
+    if request.method == "GET":
+        ten = request.GET.get('ten')
+        print(ten)
+        print(request.GET)
+        return HttpResponse('''
+            <h1>Input form</h1>
+            <form style="padding-top: 12px; display: inline-flex; flex-direction: column; gap: 8px">
+                <label for="ten">Ten</label>
+                <input id="ten" name="ten"><br>
+                <label for="age">Age</label>
+                <input id="age" name="age"><br>
+                <label for="address">Address</label>
+                <input id = "address" name="address">
+                <button type="submit">Submit</button>
+            </form>
+        ''')
+    elif request.method == "POST":
+        count += 1
+        return HttpResponse('Count: ', count)
+    print('Phương thức truy cập là: ' + request.method)
+    return HttpResponse('Phương thức truy cập là: ' + request.method)
+
+#Điểm yếu: Phải nhập đúng tên tiếng Việt mới tìm được
+@csrf_exempt
+def search_product(request):
+    text = ""
+    if request.method == "GET":
+        text = '''
+            <form method="POST">
+                <input name="product" type="text">
+                <button type="submit">Submit</button>
+            </form>
+        '''
+    elif request.method == "POST":
+        
+        for item in l_sanpham:
+            if request.POST.get('product') == item['name']:
+                text = '''
+                    <form method="POST">
+                        <input name="product" type="text">
+                        <button type="submit">Submit</button>
+                    </form>
+                    <h3>Sản phẩm bạn vừa tìm là</h3>
+                '''
+                for product in item['product']:
+                    text += '''
+                        <ul>
+                            <li>{a} - {b}VNĐ</li>
+                        </ul>
+                    '''.format(a=product['name'], b=product['price'])
+                return HttpResponse(text)
+        text = '''
+            <form method="POST">
+                <input name="product" type="text">
+                <button type="submit">Submit</button>
+            </form>
+            <h3>Sản phẩm bạn vừa tìm không tồn tại</h3>
+        '''
+    return HttpResponse(text)
+
+@csrf_exempt
+def login(request):
+    print("Phương thức: ", request.method)
+    print("Data GET: ", request.GET)
+    print("Data POST: ", request.POST)
+    text = ""
+    if request.method == "GET":
+        text = '''
+            <form method="POST">
+                <input name="username" type="text">
+                <input name="password" type="password">
+                <button type="submit">Submit</button>
+            </form>
+        '''
+    elif request.method == "POST":
+        if request.POST.get("username") == "trungtran" and request.POST.get('password') == "123":
+            return HttpResponse("Bạn đã login thành công")
+        text = '''
+        Bạn đã nhập sai username hoặc mật khẩu
+            <form method="POST">
+                <input name="username" type="text">
+                <input name="password" type="password">
+                <button type="submit">Submit</button>
+            </form>
+        '''
+    return HttpResponse(text)
+
+@csrf_exempt
+def add_product(request, id_group):
+    ### Tạo form để thêm sản phẩm vào group
+    ### form có 3 input: id, tên sản phẩm và giá
+    ### form có method POST
+    ##### không có trường nào bị rỗng, id và giá là số (sử dụng hàm isnumeric)
+    ##### nếu form ko đúng định dạng --> render lại form 
+    ##### nếu form đúng thì thêm sản phẩm mới và trả về trình duyệt tạo sản phẩm thành công
+    text = ""
+    if request.method == "GET":
+        text = '''
+            <form method="POST">
+                <input name="id_product" type="text" required><br>
+                <input name="name_product" type="text" required><br>
+                <input name="price" type="text" required><br>
+                <button type="submit">Submit</button>
+            </form>
+        '''
+    elif request.method == "POST":
+        if request.POST.get('id_product').isnumeric() and request.POST.get('price').isnumeric(): 
+            for item in l_sanpham:
+                if id_group == item['id']:
+                    item['product'].append({
+                        "id": request.POST.get('id_product'),
+                        "name": request.POST.get('name_product'),
+                        "price": request.POST.get('price')
+                    })
+                    return HttpResponse("Tạo sản phẩm thành công")
+            text = "Group Id bạn nhập không tồn tại"
+        else:
+            text = '''
+            <h3>Id sản phẩm hoặc giá sản phẩm bị nhập sai kiểu. Vui lòng nhập lại</h3>
+            <form method="POST">
+                <input name="id_product" type="text" required>
+                <input name="name_product" type="text" required>
+                <input name="price" type="text" required>
+                <button type="submit">Submit</button>
+            </form>
+        '''
+
+    return HttpResponse(text)
