@@ -184,7 +184,7 @@ def add_product(request, group):
                 <input type = "number" name = "price" placeholder = "Giá sản phẩm">
                 <button type = "submit">Submit</button>
             </form>
-        '''
+        ''')
 
             a = request.POST.get("id") 
             b = request.POST.get("name") 
