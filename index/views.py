@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 import datetime
+from index.models import Product
 
 L_sanpham = [
     {
@@ -130,8 +132,6 @@ def sanpham2(request,id_group,id_product):
 def handler404(request,exception):
     return HttpResponse("Ban dang vao 1 duong dan sai")
 
-from django.views.decorators.csrf import csrf_exempt
-
 count = 0
 @csrf_exempt
 def testrequest(request):
@@ -153,14 +153,15 @@ def testrequest(request):
         return HttpResponse("count da duoc tang")
 
 def searchproduct(request):
-    text = '''
+    search = request.GET['product'].lower() if 'product' in request.GET else ""
+    text = f'''
     <form>
-        <input name='product' placeholder='san pham'>
+        <input value="{search if search!=None else ""}"name='product' placeholder='san pham'>
         <button type='submit'>Submit</button>
     </form>
     '''
     if 'product' in request.GET:
-        search = request.GET['product'].lower() 
+        # search = request.GET['product'].lower() 
         for group in L_sanpham:
             for product in group['product']:
                 if search in product['name'].lower():
@@ -193,34 +194,54 @@ def login(request):
 
 @csrf_exempt
 def addproduct(request,idgroup):
-    form = "idgroup không tồn tại"
-    for group in L_sanpham:
-            if group['id'] == idgroup:
-                form = group['name']+'''<br>
-                <form method='POST'>
-                    <input name='idproduct' placeholder='idproduct'>
-                    <input name='name' placeholder='name product'>
-                    <input name='price' placeholder='price product'>
-                    <button type='submit'>Thêm sản phẩm</button>
-                </form>
-                '''
+    # form = "idgroup không tồn tại"
+    # for group in L_sanpham:
+    #         if group['id'] == idgroup:
+    #             form = group['name']+'''<br>
+    #             <form method='POST'>
+    #                 <input name='idproduct' placeholder='idproduct'>
+    #                 <input name='name' placeholder='name product'>
+    #                 <input name='price' placeholder='price product'>
+    #                 <button type='submit'>Thêm sản phẩm</button>
+    #             </form>
+    #             '''
+    # if request.method == 'GET':
+    #     return HttpResponse(form)
+    # elif request.method == 'POST':
+    #     print(request.POST)
+    #     if (request.POST['idproduct']!="") and (request.POST['name']!="") and (request.POST['price']!=""):
+    #         if request.POST['idproduct'].isnumeric() and request.POST['price'].isnumeric():
+    #             for group in L_sanpham:
+    #                 for product in group['product']:
+    #                     if product['id'] == int(request.POST['idproduct']):
+    #                         return HttpResponse(form+"ID sản phẩm đã tồn tại")
+    #             for group in L_sanpham:
+    #                 if group['id'] == idgroup:
+    #                     group["product"].append({
+    #                         "id": int(request.POST['idproduct']),
+    #                         "name": request.POST['name'],
+    #                         "price": int(request.POST['price']),
+    #                     })
+    #                     return HttpResponse("Thêm sản phẩm thành công!")
+    #         return HttpResponse(form+"idproduct và price phải là dạng số")
+    #     return HttpResponse(form+"<br>Yêu cầu nhập đủ thông tin")
+
+    # product = Product(name="Bún thang", price=35000)
+    # product.save()
+
+    form = '''
+            <form method='POST'>
+                <input name='name' placeholder='name product'>
+                <input name='price' placeholder='price product'>
+                <button type='submit'>Thêm sản phẩm</button>
+            </form>
+            '''
+
     if request.method == 'GET':
         return HttpResponse(form)
-    elif request.method == 'POST':
-        print(request.POST)
-        if (request.POST['idproduct']!="") and (request.POST['name']!="") and (request.POST['price']!=""):
-            if request.POST['idproduct'].isnumeric() and request.POST['price'].isnumeric():
-                for group in L_sanpham:
-                    for product in group['product']:
-                        if product['id'] == int(request.POST['idproduct']):
-                            return HttpResponse(form+"ID sản phẩm đã tồn tại")
-                for group in L_sanpham:
-                    if group['id'] == idgroup:
-                        group["product"].append({
-                            "id": int(request.POST['idproduct']),
-                            "name": request.POST['name'],
-                            "price": int(request.POST['price']),
-                        })
-                        return HttpResponse("Thêm sản phẩm thành công!")
-            return HttpResponse(form+"idproduct và price phải là dạng số")
-        return HttpResponse(form+"<br>Yêu cầu nhập đủ thông tin")
+    elif request.method == "POST":
+        if (request.POST['name']!="") and (request.POST['price']!="") and request.POST['price'].isnumeric():
+            product = Product(name=request.POST["name"], price=request.POST['price'])
+            product.save()
+            return HttpResponse("Them san pham thanh cong")
+        return HttpResponse(form+"Dien du truong va price phai la dang so")

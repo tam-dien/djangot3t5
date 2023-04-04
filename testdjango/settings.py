@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'index',
+    'app1',
 ]
 
 MIDDLEWARE = [
@@ -72,11 +74,22 @@ WSGI_APPLICATION = 'testdjango.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+# cài thêm thư viện bằng lệnh: pip install mssql-django
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": {
+        "ENGINE": "mssql",
+        "NAME": "djangot3t5",
+        "HOST": "DESKTOP-CH6NCLU\SQLEXPRESS",
+        "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server", 
+        },
+    },
 }
 
 
