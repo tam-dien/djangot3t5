@@ -178,13 +178,13 @@ def add_product(request, group):
                 for i in item["product"]:
                     if id == i["id"]:
                         return HttpResponse("ID đã tồn tại. Hãy nhập ID khác." + '''    
-            <form method = "POST">
-                <input type = "number" name = "id" placeholder="ID sản phẩm">
-                <input name = "name" placeholder = "Tên sản phẩm">
-                <input type = "number" name = "price" placeholder = "Giá sản phẩm">
-                <button type = "submit">Submit</button>
-            </form>
-        ''')
+                            <form method = "POST">
+                                <input type = "number" name = "id" placeholder="ID sản phẩm">
+                                <input name = "name" placeholder = "Tên sản phẩm">
+                                <input type = "number" name = "price" placeholder = "Giá sản phẩm">
+                                <button type = "submit">Submit</button>
+                            </form>
+                        ''')
 
             a = request.POST.get("id") 
             b = request.POST.get("name") 
