@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 import datetime
+from index.models import Product
 
 # Create your views here.
 def index(request):
@@ -183,39 +184,37 @@ def http_method(request):
 #Điểm yếu: Phải nhập đúng tên tiếng Việt mới tìm được
 @csrf_exempt
 def search_product(request):
-    text = ""
-    if request.method == "GET":
-        text = '''
-            <form method="POST">
-                <input name="product" type="text">
-                <button type="submit">Submit</button>
-            </form>
-        '''
-    elif request.method == "POST":
+    search = request.GET.get('product')
+    text = f'''
+        <form method="GET">
+            <input value="{search if search != None else ''}" name="product" type="text">
+            <button type="submit">Submit</button>
+        </form>
+    '''
         
-        for item in l_sanpham:
-            if request.POST.get('product') == item['name']:
-                text = '''
-                    <form method="POST">
-                        <input name="product" type="text">
-                        <button type="submit">Submit</button>
-                    </form>
-                    <h3>Sản phẩm bạn vừa tìm là</h3>
-                '''
-                for product in item['product']:
-                    text += '''
-                        <ul>
-                            <li>{a} - {b}VNĐ</li>
-                        </ul>
-                    '''.format(a=product['name'], b=product['price'])
-                return HttpResponse(text)
-        text = '''
-            <form method="POST">
-                <input name="product" type="text">
-                <button type="submit">Submit</button>
-            </form>
-            <h3>Sản phẩm bạn vừa tìm không tồn tại</h3>
-        '''
+    for item in l_sanpham:
+        if request.POST.get('product') == item['name']:
+            text = '''
+                <form method="POST">
+                    <input name="product" type="text">
+                    <button type="submit">Submit</button>
+                </form>
+                <h3>Sản phẩm bạn vừa tìm là</h3>
+            '''
+            for product in item['product']:
+                text += '''
+                    <ul>
+                        <li>{a} - {b}VNĐ</li>
+                    </ul>
+                '''.format(a=product['name'], b=product['price'])
+            return HttpResponse(text)
+    text = '''
+        <form method="POST">
+            <input name="product" type="text">
+            <button type="submit">Submit</button>
+        </form>
+        <h3>Sản phẩm bạn vừa tìm không tồn tại</h3>
+    '''
     return HttpResponse(text)
 
 @csrf_exempt
@@ -290,3 +289,25 @@ def add_product(request, id_group):
         '''
 
     return HttpResponse(text)
+
+@csrf_exempt
+def add_product2(request):
+    text = ''
+    if request.method == "GET":
+        text = '''
+            <h3>Nhập sản phẩm</h3>
+            <form method="POST">
+                <label for="name_product">Tên sản phẩm</label><br>
+                <input name="name_product" type="text" required><br>
+                <label for="price">Giá</label><br>
+                <input name="price" type="text" required><br>
+                <button type="submit">Submit</button>
+            </form>
+        '''
+    elif request.method == 'POST':
+        if request.POST.get('price').isnumeric():
+            product = Product(name=request.POST.get('name_product'), price=request.POST.get('price'))
+            product.save()
+            text = 'Tạo thành công'
+    return HttpResponse(text)
+
