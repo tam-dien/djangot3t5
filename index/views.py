@@ -193,7 +193,7 @@ def login(request):
     return HttpResponse(text)
 
 @csrf_exempt
-def add_product(request,id_group):
+def add_product(request):
     ### tạo form để thêm sản phẩm vào group
     ##### form có 3 input: id, tên sản phẩm và giá
     ##### form có method POST
@@ -224,7 +224,7 @@ def add_product(request,id_group):
         if len(error) == 0:
             product = Product(name=request.POST.get("product"),price=request.POST.get("price"),quantity=request.POST.get("quantity"))
             product.save()
-            text = "Tạo sản phẩm thành công"
+            return redirect("/list_product")
         else:
             text = f'''
             <form method="POST">
@@ -242,6 +242,7 @@ def product(request,id):
     try:
         product = Product.objects.get(id=id)
         text = f'''
+            <button><a href="/list_product">Back</a></button>
             <ul>
                 <li>Tên sản phẩm: {product.name}</li>
                 <li>Giá: {product.price}</li>
@@ -278,7 +279,9 @@ def edit_product(request,id):
     return HttpResponse(text)
 
 def delete_product(request,id):
-    return HttpResponse()
+    product = Product.objects.get(id=id)
+    product.delete()
+    return redirect("/list_product")
 
 @csrf_exempt
 def list_product(request): 
@@ -291,6 +294,7 @@ def list_product(request):
         <form>
             <input value="{search_name}" name="name" placeholder="Tên sản phẩm">
         </form>
+        <button><a href="add_product">Add</a></button>
     '''
     for product in L_product:
         text += f'''
@@ -298,6 +302,7 @@ def list_product(request):
                 <li>Tên sản phẩm: {product.name}</li>
                 <li>Giá: {product.price}</li>
                 <li>Số lượng: {product.quantity}</li>
+                <li><button><a href="/product/{product.id}">View</a></button></li>
             </ul>
         '''
     return HttpResponse(text)

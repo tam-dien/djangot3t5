@@ -13,7 +13,7 @@ urlpatterns = [
     path('test_request', views.test_request),
     path('search_product', views.search_product),
     path('login', views.login),
-    path('add_product/<int:id_group>',views.add_product),
+    path('add_product',views.add_product),
     path('product/<int:id>',views.product),
     path('list_product',views.list_product),
     path('edit_product/<int:id>',views.edit_product),
