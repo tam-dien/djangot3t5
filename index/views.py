@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse
 import datetime
 from index.models import Product
@@ -247,14 +247,41 @@ def product(request,id):
                 <li>Giá: {product.price}</li>
                 <li>Số lượng: {product.quantity}</li>
             </ul>
+            <button><a href="/edit_product/{id}">Edit</a></button>
+            <button><a href="/delete_product/{id}">Delete</a></button>
         '''
     except Product.DoesNotExist:
         text = "Không tồn tại sản phẩm"
     return HttpResponse(text)
 
 @csrf_exempt
-def list_product(request):
-    L_product = Product.objects.all()
+def edit_product(request,id):
+    product = Product.objects.get(id=id)
+    if request.method == "GET":
+        text = f'''
+            <form method="POST">
+                <input value="{product.name}" name="product" placeholder="Tên sản phẩm">
+                <input value="{product.price}" name="price" placeholder="Giá">
+                <input value="{product.quantity}" name="quantity" placeholder="Số lutợng">
+                <button type="submit">Submit</button>
+            </form>
+        '''
+    elif request.method == "POST":
+        name = request.POST.get("product")
+        price = request.POST.get("price")
+        quantity = request.POST.get("quantity")
+        product.name = name
+        product.price = price
+        product.quantity = quantity
+        product.save()
+        return redirect(f"/product/{id}")
+    return HttpResponse(text)
+
+def delete_product(request,id):
+    return HttpResponse()
+
+@csrf_exempt
+def list_product(request): 
     search_name = request.GET.get("name") if request.GET.get("name") != None else ""
     if search_name == "":
         L_product = Product.objects.all()
