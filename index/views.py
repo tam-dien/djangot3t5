@@ -209,6 +209,7 @@ def add_product(request,id_group):
             <form method="POST">
                 <input name="product" placeholder="Tên sản phẩm">
                 <input name="price" placeholder="Giá">
+                <input name="quantity" placeholder="Số lutợng">
                 <button type="submit">Submit</button>
             </form>
         '''
@@ -218,8 +219,10 @@ def add_product(request,id_group):
             error += "Tên sản phẩm phải có ít nhất 2 ký tự<br>"
         if not request.POST.get("price").isnumeric() or int(request.POST.get("price")) < 0:
             error += "Giá cần phải là số dương<br>"
+        if not request.POST.get("quantity").isnumeric() or int(request.POST.get("quantity")) < 0:
+            error += "Số lượng cần phải là số dương<br>"
         if len(error) == 0:
-            product = Product(name=request.POST.get("product"),price=request.POST.get("price"))
+            product = Product(name=request.POST.get("product"),price=request.POST.get("price"),quantity=request.POST.get("quantity"))
             product.save()
             text = "Tạo sản phẩm thành công"
         else:
@@ -232,3 +235,8 @@ def add_product(request,id_group):
             <p style="color:red">{error}</p>
         '''
     return HttpResponse(text)
+
+@csrf_exempt
+def product(request,id):
+    ### trả về thông tin của product tại id đó
+    pass
