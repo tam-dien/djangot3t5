@@ -293,6 +293,7 @@ def list_product(request):
     text = f'''
         <form>
             <input value="{search_name}" name="name" placeholder="Tên sản phẩm">
+            <input name="quantity" placeholder="Số lượng sản phẩm">
         </form>
         <button><a href="add_product">Add</a></button>
     '''
