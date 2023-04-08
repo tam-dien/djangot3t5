@@ -13,5 +13,9 @@ urlpatterns = [
     path('testrequest/',views.testrequest),
     path('searchproduct/', views.searchproduct),
     path('login/', views.login),
-    path('addproduct/<int:idgroup>/', views.addproduct),
+    path('addproduct/', views.addproduct),
+    path('product/<int:idproduct>/', views.product),
+    path('listproduct/', views.list_product),
+    path('editproduct/<int:id>/', views.editproduct),
+    path('deleteproduct/<int:id>/', views.deleteproduct),
 ]

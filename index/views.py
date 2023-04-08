@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import datetime
@@ -193,55 +193,114 @@ def login(request):
         ''')
 
 @csrf_exempt
-def addproduct(request,idgroup):
-    # form = "idgroup không tồn tại"
-    # for group in L_sanpham:
-    #         if group['id'] == idgroup:
-    #             form = group['name']+'''<br>
-    #             <form method='POST'>
-    #                 <input name='idproduct' placeholder='idproduct'>
-    #                 <input name='name' placeholder='name product'>
-    #                 <input name='price' placeholder='price product'>
-    #                 <button type='submit'>Thêm sản phẩm</button>
-    #             </form>
-    #             '''
-    # if request.method == 'GET':
-    #     return HttpResponse(form)
-    # elif request.method == 'POST':
-    #     print(request.POST)
-    #     if (request.POST['idproduct']!="") and (request.POST['name']!="") and (request.POST['price']!=""):
-    #         if request.POST['idproduct'].isnumeric() and request.POST['price'].isnumeric():
-    #             for group in L_sanpham:
-    #                 for product in group['product']:
-    #                     if product['id'] == int(request.POST['idproduct']):
-    #                         return HttpResponse(form+"ID sản phẩm đã tồn tại")
-    #             for group in L_sanpham:
-    #                 if group['id'] == idgroup:
-    #                     group["product"].append({
-    #                         "id": int(request.POST['idproduct']),
-    #                         "name": request.POST['name'],
-    #                         "price": int(request.POST['price']),
-    #                     })
-    #                     return HttpResponse("Thêm sản phẩm thành công!")
-    #         return HttpResponse(form+"idproduct và price phải là dạng số")
-    #     return HttpResponse(form+"<br>Yêu cầu nhập đủ thông tin")
-
-    # product = Product(name="Bún thang", price=35000)
-    # product.save()
-
-    form = '''
-            <form method='POST'>
-                <input name='name' placeholder='name product'>
-                <input name='price' placeholder='price product'>
-                <button type='submit'>Thêm sản phẩm</button>
+def addproduct(request):
+    if request.method == "GET":
+        text = '''
+            <form method="POST">
+                <input name="product" placeholder="Tên sản phẩm">
+                <input name="price" placeholder="Giá">
+                <input name="quantity" placeholder="Số lượng">
+                <button type="submit">Submit</button>
             </form>
-            '''
-
-    if request.method == 'GET':
-        return HttpResponse(form)
+        '''
     elif request.method == "POST":
-        if (request.POST['name']!="") and (request.POST['price']!="") and request.POST['price'].isnumeric():
-            product = Product(name=request.POST["name"], price=request.POST['price'])
+        error = ""
+        if len(request.POST.get("product")) < 2:
+            error += "Tên sản phẩm phải có ít nhất 2 ký tự<br>"
+        if not request.POST.get("price").isnumeric() or int(request.POST.get("price")) < 0:
+            error += "Giá cần phải là số dương<br>"
+        if not request.POST.get("quantity").isnumeric() or int(request.POST.get("quantity")) < 0:
+            error += "Số lượng cần phải là số dương<br>"
+
+        if len(error) == 0:
+            product = Product(name=request.POST.get("product"),price=request.POST.get("price"), quantity=request.POST.get("quantity"))
             product.save()
-            return HttpResponse("Them san pham thanh cong")
-        return HttpResponse(form+"Dien du truong va price phai la dang so")
+            return redirect("/listproduct/")
+        else:
+            text = f'''
+            <form method="POST">
+                <input name="product" placeholder="Tên sản phẩm" value="{request.POST.get("product")}">
+                <input name="price" placeholder="Giá" value="{request.POST.get("price")}">
+                <input name="quantity" placeholder="Số lượng" value="{request.POST.get("quantity")}">
+                <button type="submit">Submit</button>
+            </form>
+            <p style="color:red">{error}</p>
+            '''
+    return HttpResponse(text)
+
+@csrf_exempt
+def product(requets,idproduct):
+    try:
+        product = Product.objects.get(id=idproduct) 
+        text = f'''
+        <button><a href='/listproduct/'>Quay lại</a></button>
+        <ul>
+            <li>Tên sản phẩm:{product.name}</li>
+            <li>Gía sản phảm: {product.price}</li>
+            <li>Số lượng: {product.quantity}</li>
+        </ul>
+        <button><a href='/editproduct/{idproduct}/'>Chỉnh sửa</a></button>
+        <button><a href='/deleteproduct/{idproduct}/'>Xóa</a></button>
+        '''
+    except Product.DoesNotExist:
+        text = "ID không tồn tại"
+    return HttpResponse(text)
+
+@csrf_exempt
+def editproduct(request,id):
+    product = Product.objects.get(id=id)
+    if request.method == "GET":
+        return HttpResponse (f'''
+        <form method="POST">
+            <input name="name" placeholder="Tên sản phẩm" value="{product.name}">
+            <input name="price" placeholder="Giá" value="{product.price}">
+            <input name="quantity" placeholder="Giá" value="{product.quantity}">
+            <button type="submit">Lưu</button>
+        </form>
+        ''')
+    elif request.method == "POST":
+        product.name = request.POST.get('name')
+        product.price = request.POST.get('price')
+        product.quantity = request.POST.get('quantity')
+        product.save()
+        return redirect(f"/product/{id}")
+
+@csrf_exempt
+def deleteproduct(request,id):
+    product = Product.objects.get(id=id)
+    product.delete()
+    return redirect("/listproduct/")
+
+@csrf_exempt
+def list_product(request):
+    print(request.GET)
+    print("quantity1:",request.GET.get("quantity"))
+    search_name = request.GET.get("name") if request.GET.get("name") != None else ""
+    search_quantity = request.GET.get("quantity") if request.GET.get("quantity") != None else ""
+    print("quantity2:",request.GET.get("quantity"))
+    if search_name == "" and search_quantity == "":
+        l_product = Product.objects.all()
+    elif search_quantity == "":
+        l_product = Product.objects.filter(name__icontains=search_name)
+    else:
+        l_product = Product.objects.filter(name__icontains=search_name, quantity__gte=search_quantity)
+    print("quantiy:",search_quantity)
+    text = f'''
+    <form>
+        <input value="{search_name}" name="name" placeholder="Tên sản phẩm"><br>
+        <input value="{search_quantity}" name="quantity" placeholder="Số lượng sản phẩm"><br>
+        <button><a href='/addproduct/'>Thêm sản phẩm</a></button>
+    </form>
+    '''
+
+    for product in l_product:
+        text += f'''
+        <ul>
+            <li>Tên sản phẩm:{product.name}</li>
+            <li>Gía sản phảm: {product.price}</li>
+            <li>Số lượng: {product.quantity}</li>
+            <li><button><a href='/product/{product.id}'>Chi tiết</a></button></li>
+        </ul>
+        '''
+
+    return HttpResponse(text)
