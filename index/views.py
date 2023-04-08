@@ -239,4 +239,38 @@ def add_product(request,id_group):
 @csrf_exempt
 def product(request,id):
     ### trả về thông tin của product tại id đó
-    pass
+    try:
+        product = Product.objects.get(id=id)
+        text = f'''
+            <ul>
+                <li>Tên sản phẩm: {product.name}</li>
+                <li>Giá: {product.price}</li>
+                <li>Số lượng: {product.quantity}</li>
+            </ul>
+        '''
+    except Product.DoesNotExist:
+        text = "Không tồn tại sản phẩm"
+    return HttpResponse(text)
+
+@csrf_exempt
+def list_product(request):
+    L_product = Product.objects.all()
+    search_name = request.GET.get("name") if request.GET.get("name") != None else ""
+    if search_name == "":
+        L_product = Product.objects.all()
+    else:
+        L_product = Product.objects.filter(name__icontains=search_name)
+    text = f'''
+        <form>
+            <input value="{search_name}" name="name" placeholder="Tên sản phẩm">
+        </form>
+    '''
+    for product in L_product:
+        text += f'''
+            <ul>
+                <li>Tên sản phẩm: {product.name}</li>
+                <li>Giá: {product.price}</li>
+                <li>Số lượng: {product.quantity}</li>
+            </ul>
+        '''
+    return HttpResponse(text)
