@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import datetime
+from index.models import Product
 
 # Create your views here.
 def index(request):
@@ -150,12 +151,18 @@ def test_request(request):
         return HttpResponse("Count đã được tăng")
 
 def search_product(request):
-    text = '''
+    search = request.GET.get("search")
+    text = f'''
         <form>
-            <input name="product" placeholder="Sản phẩm">
+            <input value="{search if search != None else ""}" name="search" placeholder="Sản phẩm">
             <button type="submit">Submit</button>
         </form>
     '''
+    if search != None:
+        for group in L_sanpham:
+            for product in group["product"]:
+                if search.lower() in product['name'].lower():
+                    text += f"Tên sản phẩm: {product['name']}<br>"
     return HttpResponse(text)
 
 @csrf_exempt
@@ -185,6 +192,7 @@ def login(request):
         '''
     return HttpResponse(text)
 
+@csrf_exempt
 def add_product(request,id_group):
     ### tạo form để thêm sản phẩm vào group
     ##### form có 3 input: id, tên sản phẩm và giá
@@ -194,4 +202,33 @@ def add_product(request,id_group):
     ######### không có trường nào bị rỗng, id và giá phải là dạng số (sử dụng hàm isnumeric)
     ######### nếu form không đúng định dạng ~~> gen lại form cho người dùng nhập lại
     ######### nếu form đúng định dạng thì thêm sản phẩm mới và trả về trình duyệt tạo sản phẩm thành công
-    return HttpResponse()
+    # product = Product(name="Bún bò",price="35000")
+    # product.save()
+    if request.method == "GET":
+        text = '''
+            <form method="POST">
+                <input name="product" placeholder="Tên sản phẩm">
+                <input name="price" placeholder="Giá">
+                <button type="submit">Submit</button>
+            </form>
+        '''
+    elif request.method == "POST":
+        error = ""
+        if len(request.POST.get("product")) < 2:
+            error += "Tên sản phẩm phải có ít nhất 2 ký tự<br>"
+        if not request.POST.get("price").isnumeric() or int(request.POST.get("price")) < 0:
+            error += "Giá cần phải là số dương<br>"
+        if len(error) == 0:
+            product = Product(name=request.POST.get("product"),price=request.POST.get("price"))
+            product.save()
+            text = "Tạo sản phẩm thành công"
+        else:
+            text = f'''
+            <form method="POST">
+                <input name="product" placeholder="Tên sản phẩm" value="{request.POST.get("product")}">
+                <input name="price" placeholder="Giá" value="{request.POST.get("price")}">
+                <button type="submit">Submit</button>
+            </form>
+            <p style="color:red">{error}</p>
+        '''
+    return HttpResponse(text)
