@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import datetime
+from index.models import Product
 
 # Create your views here.
 def index(request):
@@ -123,6 +124,93 @@ def sanpham2(request, id_group, id_product):
 
     
      return HttpResponse("no group")
+from django.views.decorators.csrf import csrf_exempt
 
+count =0 
+@csrf_exempt
+def test_request(request):
+    global count
+    print("Đường dẫn", request.path)
+    print("Dữ liệu GET:", request.GET)
+    if request.method =="GET":
+        ten =request.GET.get("ten")
+        tuoi= request.GET.get("tuoi")
+        return HttpResponse (str(ten) + str(tuoi)+ '''<br>
+            <form>
+                <input name = "ten">
+                <input name = " tuoi">
+                <button type = "submit">Submit</button>
+            </form>
+            ''' )
+    elif request.method =="POST":
+        count +=1
+        return HttpResponse("Count up")
 
+def searchproduct(request):
     
+    text='''
+        <form >
+            <input name = "product" placeholder = "sanpham">
+            <button type ="submit">Submit</button>
+        </form>
+    '''
+    if request.method =="GET":
+        tensp =request.GET.get("tensp")
+        for group in L_sanpham2:
+            for item in group:
+                 if tensp== group["name"]:
+                      
+                      return HttpResponse (+str(tensp) + str(text))
+                      
+    return HttpResponse(text)
+@csrf_exempt
+def login(request):
+    #  text=""
+    text = '''
+            <form method = "POST">
+                <input name ="username" placeholder = "Username">
+                <input type ="password" name="password" placeholder ="Password">
+                <button type ="submit">Submit</button>
+            </form>
+    '''
+   
+    if request.method =="POST":
+        name=request.POST.get("username")
+        pw= request.POST.get("password")
+        if name =="ngocquynh" and pw=="123":
+            return HttpResponse (str(name) + str(pw) + str(text))
+    return HttpResponse(text)
+@csrf_exempt
+def add_product(request):
+
+    text = '''
+            <form method = "POST">
+                <input name="price" placeholder = "price" >
+                <input name="product" placeholder ="product">
+                <input name="quantity" placeholder ="quantity">
+                <button type ="submit">Submit</button>
+            </form>
+    '''
+    if request.method =="POST":
+            gia =request.POST.get("price")
+            sp =request.POST.get("product")
+            sl =request.POST.get("quantity")
+                 
+            if (gia.isnumeric() == True) and(sp != None):
+                product=Product(name=sp,price=gia,quantity=sl)
+                product.save()
+    return HttpResponse (text)
+def queryproduct(request,id):
+    text = '''
+            <form>
+                <button type ="submit">Edit</button>
+                <button type ="submit">Delete</button>
+            </form>
+    '''
+
+
+    product=Product.objects.get(id=id)
+
+    return HttpResponse(text+"<br>"+product.name+"<br>"+str(product.price)+"<br>"+str(product.quantity))
+
+
