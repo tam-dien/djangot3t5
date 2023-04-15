@@ -348,3 +348,9 @@ def list_product(request):
             </ul>
         '''
     return HttpResponse(text)
+
+def list_group(request):
+    return HttpResponse()
+
+def group(request,id):
+    return HttpResponse()
