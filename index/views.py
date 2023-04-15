@@ -350,7 +350,47 @@ def list_product(request):
     return HttpResponse(text)
 
 def list_group(request):
-    return HttpResponse()
+    L_group = GroupProduct.objects.all()
+    text = ""
+    for gd in L_group:
+        # ds_product = Product.objects.filter(group=gd)
+        # quantity = ds_product.count()
+        ds_product = gd.product_set.all()
+        quantity = ds_product.count()
+        text += f'''
+            <ul>
+                <li>Tên nhóm: {gd.name}</li>
+                <li>Số lượng sản phẩm: {quantity}</li>
+                <li><button><a href="/group/{gd.id}">View</a></button></li>
+            </ul>
+        '''
+    return HttpResponse(text)
 
 def group(request,id):
-    return HttpResponse()
+    try:
+        gd = GroupProduct.objects.get(id=id)
+        ds_product = gd.product_set.all()
+        quantity = len(ds_product)
+        ds_product = "".join([f'''
+            <li>Tên sản phẩm: {product.name}</li>
+            <li>Giá: {product.price}</li>
+            <li>Số lượng: {product.quantity}</li>
+            ---------------------
+        ''' for product in ds_product])
+        text = f'''
+            <button><a href="/list_product">Back</a></button>
+            <ul>
+                <li>Tên sản phẩm: {gd.name}</li>
+                <li>Số lượng sản phẩm: {quantity}</li>
+                <li>Danh sách sản phẩm: 
+                    <ul>
+                        {ds_product}
+                    </ul>
+                </li>
+            </ul>
+            <button><a href="/edit_product/{id}">Edit</a></button>
+            <button><a href="/delete_product/{id}">Delete</a></button>
+        '''
+    except Product.DoesNotExist:
+        text = "Không tồn tại sản phẩm"
+    return HttpResponse(text)
