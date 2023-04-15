@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 import datetime
-from index.models import Product
+from index.models import *
 
 # Create your views here.
 def index(request):
@@ -247,6 +247,7 @@ def product(request,id):
                 <li>Tên sản phẩm: {product.name}</li>
                 <li>Giá: {product.price}</li>
                 <li>Số lượng: {product.quantity}</li>
+                <li>Nhóm: {product.group.name if product.group != None else "Chưa có group"}</li>
             </ul>
             <button><a href="/edit_product/{id}">Edit</a></button>
             <button><a href="/delete_product/{id}">Delete</a></button>
@@ -258,12 +259,20 @@ def product(request,id):
 @csrf_exempt
 def edit_product(request,id):
     product = Product.objects.get(id=id)
+    group_product = ""
+    for gp in GroupProduct.objects.all():
+        group_product += f"<option value='{gp.id}'>{gp.name}</option>"
+    # "".join([f"<option value='{gp.id}'>{gp.name}</option>" for gp in GroupProduct.objects.all()])
     if request.method == "GET":
         text = f'''
             <form method="POST">
                 <input value="{product.name}" name="product" placeholder="Tên sản phẩm">
                 <input value="{product.price}" name="price" placeholder="Giá">
                 <input value="{product.quantity}" name="quantity" placeholder="Số lutợng">
+                <select name="group">
+                    <option value="">Không có group</option>
+                    {group_product}
+                </select>
                 <button type="submit">Submit</button>
             </form>
         '''
@@ -271,9 +280,18 @@ def edit_product(request,id):
         name = request.POST.get("product")
         price = request.POST.get("price")
         quantity = request.POST.get("quantity")
+        group = request.POST.get("group")
+        if group == "": group = None
         product.name = name
         product.price = price
         product.quantity = quantity
+        gr = GroupProduct.objects.get(id=group)
+        ## dòng 287 lấy group product từ id có đc tư form
+        ## giả sử e chọn id tư form là 2
+        ## ~~> gr của e sẽ là đối tượng Phở
+        product.group = gr
+        ### product.group là 1 foreign key
+        ### product.group ~~> là 1 đối tượng productGroup
         product.save()
         return redirect(f"/product/{id}")
     return HttpResponse(text)
@@ -284,25 +302,48 @@ def delete_product(request,id):
     return redirect("/list_product")
 
 @csrf_exempt
+def add_group_product(request):
+    if request.method == "GET":
+        text = '''
+            <form method="POST">
+                <input name="name" placeholder="Tên group">
+                <button type="submit">Submit</button>
+            </form>
+        '''
+        return HttpResponse(text)
+    elif request.method == "POST":
+        product = GroupProduct(name=request.POST.get("name"))
+        product.save()
+        return redirect("/list_product")
+       
+@csrf_exempt
 def list_product(request): 
     search_name = request.GET.get("name") if request.GET.get("name") != None else ""
-    if search_name == "":
-        L_product = Product.objects.all()
-    else:
-        L_product = Product.objects.filter(name__icontains=search_name)
+    search_quantity = request.GET.get("quantity") if request.GET.get("quantity") != None else ""
+    L_product = Product.objects.all()
+    if search_name != "":
+        L_product = L_product.filter(name__icontains=search_name)
+    if search_quantity.isnumeric():
+        L_product = L_product.filter(quantity__gte=search_quantity)
+    ### khi nào django thực thi câu lệnh SQL
+    ### thực thi cậu lệnh SQL có nghĩa la access database
     text = f'''
         <form>
             <input value="{search_name}" name="name" placeholder="Tên sản phẩm">
-            <input name="quantity" placeholder="Số lượng sản phẩm">
+            <input value="{search_quantity}" name="quantity" placeholder="Số lượng sản phẩm">
+            <button type="submit">Search</button>
         </form>
-        <button><a href="add_product">Add</a></button>
+        <button><a href="/add_group_product">Add Group</a></button>
+        <button><a href="/add_product">Add</a></button>
     '''
+    ### access vào database khi ta sử dụng dữ liệu
     for product in L_product:
         text += f'''
             <ul>
                 <li>Tên sản phẩm: {product.name}</li>
                 <li>Giá: {product.price}</li>
                 <li>Số lượng: {product.quantity}</li>
+                <li>Nhóm: {product.group.name if product.group != None else "Chưa có group"}</li>
                 <li><button><a href="/product/{product.id}">View</a></button></li>
             </ul>
         '''
