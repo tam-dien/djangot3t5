@@ -11,4 +11,5 @@ urlpatterns = [
     path('timsp/', views.timsp),
     path('login/', views.login),
     path('add_product/<int:group>', views.add_product),
+    path('search_product/', views.search_product),
 ]

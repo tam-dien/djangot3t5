@@ -206,3 +206,17 @@ def add_product(request, group):
             </form>
         '''
     return HttpResponse(text)
+
+def search_product(request):
+    search = request.GET.get("search")
+    text = f'''
+        <form>
+            <input value="{search if search != None else ""}" name="search" placeholder="Sản phẩm">
+            <button type="Submit">Submit</button>
+        </form>'''
+    if search != None:
+        for group in L_sanpham2:
+            for product in group["product"]:
+                if search.lower() in product['name'].lower():
+                    text += f"Tên sản phẩm: {product['name']}<br>"
+    return HttpResponse(text)
