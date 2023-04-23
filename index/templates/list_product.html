@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block body %}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Group</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for i in product %}
+        <tr>
+            <td>{{i.name}}</td>
+            <td>{{i.price}}</td>
+            <td>{{i.quantity}}</td>
+            <td>{{i.group.name}}</td>
+            <td>
+                <a class="btn btn-info" href="/edit_product/{{i.id}}">Edit</a>
+                <a class="btn btn-danger" href="/delete_product/{{i.id}}">Delete</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
