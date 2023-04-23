@@ -1,0 +1,30 @@
+{% extends "index/base.html" %}
+{% block content %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Group</th>
+                <th colspan="2">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in product %}
+                <tr>
+                    <td>{{i.name}}</td>
+                    <td>{{i.price}}</td>
+                    <td>{{i.quantity}}</td>
+                    <td>{{i.group.name}}</td>
+                    <td>
+                        <a class="btn btn-info" href="/edit_product/{{i.id}}">Update</a>
+                    </td>
+                    <td>
+                        <a class="btn btn-danger" href="/delete_product/{{i.id}}">Delete</a>
+                    </td>
+                </tr>
+            {% endfor%}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "index/base.html" %}
+{% block content %}
+    <h1>Hello</h1>
+    {% for product in foods %}
+        {% if product.price %}
+        <h1>{{ product.name }}</h1>
+        {% else %}
+
+        {% endif %}
+    {% endfor %}
+    <h2>Từ file index</h2>
+{% endblock %}
