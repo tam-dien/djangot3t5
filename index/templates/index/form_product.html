@@ -1,0 +1,31 @@
+{% extends "index/base.html" %}
+{% block content %}
+    <div class="container">
+        <h2>Edit product</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row">
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Name</label>
+                    <input type="text" class="form-control" name="name" value="{{product.name}}" id="exampleInputEmail1">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Price</label>
+                    <input type="number" class="form-control" name="price" value="{{product.price}}" id="exampleInputPassword1">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Quantity</label>
+                    <input type="number" class="form-control" name="quantity" value="{{product.quantity}}" id="exampleInputPassword1">
+                </div>
+                <label for="group">Group</label>
+                <select id="group" class="form-select mb-3" name="group" aria-label="Default select example">
+                    {% for i in gr_product %}
+                        <option {% if product.group.id == i.id %}selected{% else %} {% endif %} value="{{i.id}}">{{i.name}}</option>
+                    {% endfor %}
+                </select>
+                
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+{% endblock %}
